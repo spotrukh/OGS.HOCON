@@ -1,8 +1,8 @@
 OGS.HOCON
 =========
-OGS.HOCON dotNet library based on the same HOCON notation described at [typesafe HCOCN](https://github.com/typesafehub/config/blob/master/HOCON.md).
+OGS.HOCON dotNet library based on the same HOCON notation described in [typesafe HCOCN](https://github.com/typesafehub/config/blob/master/HOCON.md).
 
-Currently only utilize a few points of the typesafe HOCON spec.
+Current implementation is not full support HOCON specification, follow link [LIMITATION.md](LIMITATION.md) to check current limitations.
 
 **Notation example:**
 
