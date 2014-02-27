@@ -1,9 +1,6 @@
 OGS.HOCON
 =========
-
-dotNet HOCON reader/writer implementation
-
-OGS.HOCON base on the same HOCON notation described at [typesafe HCOCN](https://github.com/typesafehub/config/blob/master/HOCON.md).
+OGS.HOCON dotNet library based on the same HOCON notation described at [typesafe HCOCN](https://github.com/typesafehub/config/blob/master/HOCON.md).
 
 Currently only utilize a few points of the typesafe HOCON spec.
 
