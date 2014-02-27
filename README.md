@@ -46,7 +46,7 @@ Currently only utilize a few points of the typesafe HOCON spec.
         }
     }
     
-    
+### How to use
 **Using HOCON notation:**    
 ```csharp
 var reader = new DictionaryReader(null);
