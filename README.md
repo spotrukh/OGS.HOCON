@@ -74,11 +74,13 @@ config.ReadFromString(
         port : 22
     }
     status : on
+    log : ["warn", error, info]
 }");
 
 var host = config.GetString("ssh.connection.host");
 var port = config.GetInt("ssh.connection.port");
 var status = config.GetBool("ssh.status");
+var log = config.GetStringList("ssh.log");
 ```
     
     
