@@ -1,4 +1,4 @@
 OGS.HOCON
 =========
 
-dotNet HOCON reader implementation &amp; configuration
+dotNet HOCON reader/writer implementation
