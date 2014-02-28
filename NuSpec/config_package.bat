@@ -1,0 +1,1 @@
+..\.nuget\nuget.exe pack ..\OGS.Config\OGS.Config.csproj -Build -Properties Configuration=Release -Symbols
