@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Collections.Generic;
+using System.Globalization;
 
 namespace OGS.HOCON
 {
@@ -125,10 +126,23 @@ namespace OGS.HOCON
             }
             else if (value is bool)
             {
-                builder.Append(((bool)value) ? "true" : "false");
+                builder.Append(((bool) value) ? "true" : "false");
+            }
+            else if (value is decimal)
+            {
+                var numberFormat = new NumberFormatInfo { NumberDecimalSeparator = "." };
+                builder.AppendFormat("{0}", ((decimal)value).ToString(numberFormat));
+            }
+            else if (value is double)
+            {
+                var numberFormat = new NumberFormatInfo { NumberDecimalSeparator = "." };
+                builder.AppendFormat("{0}", ((double)value).ToString(numberFormat));
             }
             else
+            {
+
                 builder.AppendFormat("{0}", value);
+            }
         }
     }
 }

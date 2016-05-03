@@ -2,6 +2,8 @@
 [Bb]in/
 [Oo]bj/
 
+*.DotSettings
+
 # mstest test results
 TestResults
 

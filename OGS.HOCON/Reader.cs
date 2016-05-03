@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Collections.Generic;
+using System.Globalization;
 using OGS.HOCON.Impl;
 
 namespace OGS.HOCON
@@ -291,11 +292,11 @@ namespace OGS.HOCON
                     return true;
 
                 case TokenType.DeciamlValue:
-                    value = decimal.Parse(content);
+                    value = decimal.Parse(content, new NumberFormatInfo {CurrencyDecimalSeparator = "."});
                     return true;
 
                 case TokenType.DoubleValue:
-                    value = (decimal)double.Parse(content);
+                    value = (decimal)double.Parse(content, new NumberFormatInfo { CurrencyDecimalSeparator = "." });
                     return true;
 
                 case TokenType.BooleanValue:
