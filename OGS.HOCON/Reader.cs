@@ -277,7 +277,6 @@
                         RiseCreateOrUpdateValue(currentPath, simpleValue);
                     else
                         RiseRemoveNode(currentPath);
-
                 }
                 else if (token == TokenType.BeginScope)
                     ReadBeginScope(tokenProcessor, currentPath, ref alreadyIncluded);
