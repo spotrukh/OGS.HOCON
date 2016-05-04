@@ -7,6 +7,7 @@ namespace OGS.HOCON
     {
 	void A() {
 		int a;
+		string b = 1;
 	}
     }
 
