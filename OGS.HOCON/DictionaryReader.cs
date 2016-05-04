@@ -5,9 +5,8 @@ namespace OGS.HOCON
 {
     public class DictionaryReaderNode
     {
-	var A() {
+	void A() {
 		int a;
-		string b = 1;
 	}
     }
 
