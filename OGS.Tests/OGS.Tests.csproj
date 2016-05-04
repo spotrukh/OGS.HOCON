@@ -46,8 +46,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ConfigurationTests.cs" />
+    <Compile Include="HOCONReaderTestHelper.cs" />
     <Compile Include="HOCONWriterTests.cs" />
     <Compile Include="HOCONReaderTests.cs" />
+    <Compile Include="NegativeScenariosTestSources.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestSources.cs" />
   </ItemGroup>
