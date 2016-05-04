@@ -5,10 +5,6 @@ namespace OGS.HOCON
 {
     public class DictionaryReaderNode
     {
-	void A() {
-		int a;
-		string b = 1;
-	}
     }
 
     public class DictionaryReader : Reader<DictionaryReaderNode>
