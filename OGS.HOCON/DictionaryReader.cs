@@ -1,16 +1,19 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-
-namespace OGS.HOCON
+﻿namespace OGS.HOCON
 {
-    public class DictionaryReaderNode
-    {
-    }
+    using System.Collections.Generic;
+    using System.Linq;
 
+    /// <summary>
+    /// DictionaryReader class
+    /// </summary>
     public class DictionaryReader : Reader<DictionaryReaderNode>
     {
-        public IDictionary<string, object> Source { get; private set; }
-
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DictionaryReader"/> class.
+        /// </summary>
+        /// <param name="resolveSource">
+        /// The resolve source.
+        /// </param>
         public DictionaryReader(ResolveSourceHandler resolveSource)
         {
             Source = new Dictionary<string, object>();
@@ -23,5 +26,10 @@ namespace OGS.HOCON
             GetNodeOrValue += path => Source.ContainsKey(path) ? Source[path] : null;
             GetNodesOrValues += path => Source.Where(item => path == item.Key || item.Key.StartsWith(path + ".")).ToArray();
         }
+
+        /// <summary>
+        /// Gets the source.
+        /// </summary>
+        public IDictionary<string, object> Source { get; private set; }
     }
 }

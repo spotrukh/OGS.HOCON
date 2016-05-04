@@ -1,15 +1,23 @@
-﻿using System;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-using System.Globalization;
-
-namespace OGS.HOCON
+﻿namespace OGS.HOCON
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Globalization;
+    using System.IO;
+    using System.Linq;
+    using System.Text;
+
+    /// <summary>
+    /// The writer.
+    /// </summary>
+    /// <typeparam name="TNode">
+    /// </typeparam>
     public class Writer<TNode>
         where TNode : class, new()
     {
+        /// <summary>
+        /// The write stream.
+        /// </summary>
         public void WriteStream(Stream stream, IEnumerable<KeyValuePair<string, object>> data, string headline = null)
         {
             var writter = new StreamWriter(stream);
@@ -17,13 +25,16 @@ namespace OGS.HOCON
             writter.Flush();
         }
 
+        /// <summary>
+        /// The write string.
+        /// </summary>
         public string WriteString(IEnumerable<KeyValuePair<string, object>> data, string headline = null)
         {
             var builder = new StringBuilder();
 
             if (string.IsNullOrEmpty(headline) == false)
             {
-                foreach (var line in headline.Split(new[]{'\n', '\r'}, StringSplitOptions.RemoveEmptyEntries))
+                foreach (var line in headline.Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries))
                 {
                     builder.Append("# ");
                     builder.AppendLine(line);
@@ -47,7 +58,8 @@ namespace OGS.HOCON
                     else if (entry.Key.StartsWith(blocks.Peek() + "."))
                     {
                         builder.AppendLine();
-                        builder.AppendFormat("{0}{1} {{", 
+                        builder.AppendFormat(
+                            "{0}{1} {{", 
                             new string('\t', blocks.Count),
                             entry.Key.Replace(blocks.Peek() + ".", string.Empty));
                         builder.AppendLine();
@@ -81,13 +93,15 @@ namespace OGS.HOCON
                             builder.Append(new string('\t', blocks.Count));
                             builder.AppendLine("}");
                         }
+
                         builder.AppendLine();
                     }
 
                     builder.Append(new string('\t', blocks.Count));
 
-                    builder.AppendFormat("{0} : ",
-                        (blocks.Count) > 0 ? entry.Key.Replace(blocks.Peek() + ".", string.Empty) : entry.Key);
+                    builder.AppendFormat(
+                        "{0} : ",
+                        blocks.Count > 0 ? entry.Key.Replace(blocks.Peek() + ".", string.Empty) : entry.Key);
 
                     WriteValue(builder, entry.Value);
 
@@ -105,6 +119,9 @@ namespace OGS.HOCON
             return builder.ToString();
         }
 
+        /// <summary>
+        /// The write value.
+        /// </summary>
         private void WriteValue(StringBuilder builder, object value)
         {
             var array = value as List<object>;
@@ -118,6 +135,7 @@ namespace OGS.HOCON
                     WriteValue(builder, item);
                     if (--count > 0) builder.Append(", ");
                 }
+
                 builder.Append("]");
             }
             else if (value is string)
@@ -126,7 +144,7 @@ namespace OGS.HOCON
             }
             else if (value is bool)
             {
-                builder.Append(((bool) value) ? "true" : "false");
+                builder.Append((bool)value ? "true" : "false");
             }
             else if (value is decimal)
             {
@@ -140,7 +158,6 @@ namespace OGS.HOCON
             }
             else
             {
-
                 builder.AppendFormat("{0}", value);
             }
         }
