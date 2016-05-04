@@ -5,6 +5,10 @@ namespace OGS.HOCON
 {
     public class DictionaryReaderNode
     {
+	var A() {
+		int a;
+		string b = 1;
+	}
     }
 
     public class DictionaryReader : Reader<DictionaryReaderNode>
