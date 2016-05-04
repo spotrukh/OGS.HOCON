@@ -48,7 +48,7 @@
     <Compile Include="Reader.cs" />
     <Compile Include="Impl\Token.cs" />
     <Compile Include="Impl\TokenHandle.cs" />
-    <Compile Include="Impl\Tokenizer.cs" />
+    <Compile Include="Impl\TokenProcessor.cs" />
     <Compile Include="Impl\TokenType.cs" />
     <Compile Include="Impl\TokenLibrary.cs" />
     <Compile Include="Writer.cs" />
