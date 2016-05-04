@@ -1,6 +1,8 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.24720.0
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OGS.HOCON", "OGS.HOCON\OGS.HOCON.csproj", "{A2D1C229-2CB3-445F-B6B0-9F360CE0D461}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OGS.Config", "OGS.Config\OGS.Config.csproj", "{DED98098-5436-4D47-B9D1-4FC4D0BF3DF6}"

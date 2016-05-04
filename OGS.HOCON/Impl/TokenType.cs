@@ -1,5 +1,8 @@
 ﻿namespace OGS.HOCON.Impl
 {
+    /// <summary>
+    /// The token type.
+    /// </summary>
     internal enum TokenType
     {
         Unknown,

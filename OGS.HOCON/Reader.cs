@@ -1,44 +1,103 @@
-﻿using System;
-using System.IO;
-using System.Collections.Generic;
-using OGS.HOCON.Impl;
-
-namespace OGS.HOCON
+﻿namespace OGS.HOCON
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Globalization;
+    using System.IO;
+
+    using OGS.HOCON.Impl;
+
+    /// <summary>
+    /// The reader.
+    /// </summary>
     public class Reader<TNode>
         where TNode : class, new()
     {
+        /// <summary>
+        /// The create or update value handler.
+        /// </summary>
         public delegate void CreateOrUpdateValueHandler(string path, object value);
+
+        /// <summary>
+        /// The create or update node handler.
+        /// </summary>
         public delegate void CreateOrUpdateNodeHandler(string path, TNode value);
+
+        /// <summary>
+        /// The remove node handler.
+        /// </summary>
         public delegate void RemoveNodeHandler(string path);
+
+        /// <summary>
+        /// The get nodes or values handler.
+        /// </summary>
         public delegate KeyValuePair<string, object>[] GetNodesOrValuesHandler(string startPath);
+
+        /// <summary>
+        /// The get node or value handler.
+        /// </summary>
         public delegate object GetNodeOrValueHandler(string path);
+
+        /// <summary>
+        /// The resolve source handler.
+        /// </summary>
         public delegate string ResolveSourceHandler(string source);
 
+        /// <summary>
+        /// The resolve source.
+        /// </summary>
         public event ResolveSourceHandler ResolveSource;
+
+        /// <summary>
+        /// The create or update node.
+        /// </summary>
         public event CreateOrUpdateNodeHandler CreateOrUpdateNode;
+
+        /// <summary>
+        /// The create or update value.
+        /// </summary>
         public event CreateOrUpdateValueHandler CreateOrUpdateValue;
+
+        /// <summary>
+        /// The remove node.
+        /// </summary>
         public event RemoveNodeHandler RemoveNode;
 
+        /// <summary>
+        /// The get nodes or values.
+        /// </summary>
         public event GetNodesOrValuesHandler GetNodesOrValues;
+
+        /// <summary>
+        /// The get node or value.
+        /// </summary>
         public event GetNodeOrValueHandler GetNodeOrValue;
 
+        /// <summary>
+        /// The read.
+        /// </summary>
         public void Read(string sourcePath)
         {
             var startSource = WrapIncludeName(sourcePath);
 
-            var tokenizer = new Tokenizer(RiseResolveSource(sourcePath), TokenLibrary.Tokens);
+            var tokenizer = new TokenProcessor(RiseResolveSource(sourcePath), TokenLibrary.Tokens);
             ReadKey(tokenizer, string.Empty, ref startSource);
         }
 
+        /// <summary>
+        /// The read from string.
+        /// </summary>
         public void ReadFromString(string content)
         {
             var startSource = string.Empty;
 
-            var tokenizer = new Tokenizer(content, TokenLibrary.Tokens);
+            var tokenizer = new TokenProcessor(content, TokenLibrary.Tokens);
             ReadKey(tokenizer, string.Empty, ref startSource);
         }
 
+        /// <summary>
+        /// The read from stream.
+        /// </summary>
         public void ReadFromStream(Stream stream)
         {
             ReadFromString((new StreamReader(stream)).ReadToEnd());
@@ -46,36 +105,54 @@ namespace OGS.HOCON
 
         #region Event Helpers
 
+        /// <summary>
+        /// The rise get node or value.
+        /// </summary>
         protected virtual object RiseGetNodeOrValue(string path)
         {
             var handler = GetNodeOrValue;
             return handler != null ? handler(path) : null;
         }
 
+        /// <summary>
+        /// The rise create or update value.
+        /// </summary>
         protected virtual void RiseCreateOrUpdateValue(string path, object value)
         {
             var handler = CreateOrUpdateValue;
             if (handler != null) handler(path, value);
         }
-        
+
+        /// <summary>
+        /// The rise create or update node.
+        /// </summary>
         protected virtual void RiseCreateOrUpdateNode(string path, TNode value)
         {
             var handler = CreateOrUpdateNode;
             if (handler != null) handler(path, value);
         }
 
+        /// <summary>
+        /// The rise remove node.
+        /// </summary>
         protected virtual void RiseRemoveNode(string path)
         {
             var handler = RemoveNode;
             if (handler != null) handler(path);
         }
 
+        /// <summary>
+        /// The rise get nodes or values.
+        /// </summary>
         protected virtual KeyValuePair<string, object>[] RiseGetNodesOrValues(string startpath)
         {
             var handler = GetNodesOrValues;
             return handler != null ? handler(startpath) : new KeyValuePair<string, object>[0];
         }
 
+        /// <summary>
+        /// The rise resolve source.
+        /// </summary>
         protected virtual string RiseResolveSource(string source)
         {
             var handler = ResolveSource;
@@ -85,13 +162,19 @@ namespace OGS.HOCON
         #endregion
 
         #region Reader Implementaion
-        
+
+        /// <summary>
+        /// The wrap include name.
+        /// </summary>
         private string WrapIncludeName(string path)
         {
             return string.Format("^{0}$", path);
         }
 
-        private void ReadInclude(Tokenizer tokenizer, string path, ref string alreadyIncluded)
+        /// <summary>
+        /// The read include.
+        /// </summary>
+        private void ReadInclude(TokenProcessor tokenProcessor, string path, ref string alreadyIncluded)
         {
             var include = WrapIncludeName(path);
 
@@ -100,63 +183,67 @@ namespace OGS.HOCON
 
             alreadyIncluded += include;
 
-            tokenizer.Include(RiseResolveSource(path));
+            tokenProcessor.Include(RiseResolveSource(path));
         }
 
-        private void ReadKey(Tokenizer tokenizer, string originalPath, ref string alreadyIncluded)
+        /// <summary>
+        /// The read key.
+        /// </summary>
+        private void ReadKey(TokenProcessor tokenProcessor, string originalPath, ref string alreadyIncluded)
         {
             TokenType token;
             string value;
 
-            while (tokenizer.ReadNext(out token, out value,
-                                      new[] { TokenType.Include, TokenType.Key },
-                                      new[] { TokenType.Comment, TokenType.Space }))
+            while (tokenProcessor.ReadNext(
+                out token, out value, new[] { TokenType.Include, TokenType.Key }, new[] { TokenType.Comment, TokenType.Space }))
             {
-                tokenizer.Consume();
+                tokenProcessor.Consume();
 
                 // Read include
                 if (token == TokenType.Include)
                 {
-                    ReadInclude(tokenizer, value, ref alreadyIncluded);
+                    ReadInclude(tokenProcessor, value, ref alreadyIncluded);
                     continue;
                 }
-
-
+                
                 // Update path
                 var currentPath = originalPath;
                 if (string.IsNullOrEmpty(currentPath) == false)
                     currentPath += ".";
 
-                RiseCreateOrUpdateNode((currentPath += value), new TNode());
-                
+                RiseCreateOrUpdateNode(currentPath += value, new TNode());
+
                 // Read assign or scope
-                if (tokenizer.ReadNext(out token, out value,
+                if (tokenProcessor.ReadNext(
+                    out token,
+                    out value,
                     new[] { TokenType.BeginScope, TokenType.Assign },
                     new[] { TokenType.Comment, TokenType.Space }) == false)
-                    throw new ReaderException("Expected assign or begin scope, but: {0}, offset: {1}", token, tokenizer.Offset);
+                    throw new ReaderException("Expected assign or begin scope, but: {0}, offset: {1}", token, tokenProcessor.Offset);
 
-                tokenizer.Consume();
+                tokenProcessor.Consume();
 
                 if (token == TokenType.Assign)
                 {
-                    if (tokenizer.ReadNext(out token, out value,
+                    var requestedTokens =
                         new[]
-                            {
-                                TokenType.StringValue, 
-                                TokenType.NumericValue, 
-                                TokenType.DeciamlValue, 
-                                TokenType.DoubleValue,
-                                TokenType.BooleanValue, 
-                                TokenType.Substitution,
-                                TokenType.SafeSubstitution,
-                                TokenType.BeginArray
-                            },
-                        new[] { TokenType.Comment, TokenType.Space }) == false)
-                        throw new ReaderException("Expected arra/string/numeric/bool/substitution, but: {0}, offset: {1}", token, tokenizer.Offset);
+                        {
+                            TokenType.StringValue, TokenType.NumericValue, TokenType.DeciamlValue,
+                            TokenType.DoubleValue, TokenType.BooleanValue, TokenType.Substitution,
+                            TokenType.SafeSubstitution, TokenType.BeginArray
+                        };
 
-                    tokenizer.Consume();
+                    if (tokenProcessor.ReadNext(
+                        out token,
+                        out value,
+                        requestedTokens,
+                        new[] { TokenType.Comment, TokenType.Space }) == false)
+                        throw new ReaderException("Expected arra/string/numeric/bool/substitution, but: {0}, offset: {1}", token, tokenProcessor.Offset);
+
+                    tokenProcessor.Consume();
 
                     // Read extends
+                    object simpleValue;
                     if (token == TokenType.Substitution && RiseGetNodeOrValue(value) is TNode)
                     {
                         foreach (var item in RiseGetNodesOrValues(value))
@@ -173,53 +260,53 @@ namespace OGS.HOCON
                         }
 
                         // Continue with scope
-                        if (tokenizer.ReadNext(out token, out value,
-                                               new[] { TokenType.BeginScope },
-                                               new[] { TokenType.Comment, TokenType.Space }))
+                        if (tokenProcessor.ReadNext(
+                            out token,
+                            out value,
+                            new[] { TokenType.BeginScope },
+                            new[] { TokenType.Comment, TokenType.Space }))
                         {
-                            tokenizer.Consume();
+                            tokenProcessor.Consume();
 
-                            ReadBeginScope(tokenizer, currentPath, ref alreadyIncluded);
+                            ReadBeginScope(tokenProcessor, currentPath, ref alreadyIncluded);
                         }
                     }
                     else if (token == TokenType.BeginArray)
-                        ReadAray(tokenizer, currentPath);
+                        ReadArray(tokenProcessor, currentPath);
+                    else if (ReadValue(token, value, out simpleValue))
+                        RiseCreateOrUpdateValue(currentPath, simpleValue);
                     else
-                    {
-                        object simpleValue;
-                        if (ReadValue(token, value, out simpleValue))
-                            RiseCreateOrUpdateValue(currentPath, simpleValue);
-                        else
-                            RiseRemoveNode(currentPath);
-                    }
+                        RiseRemoveNode(currentPath);
                 }
                 else if (token == TokenType.BeginScope)
-                    ReadBeginScope(tokenizer, currentPath, ref alreadyIncluded);
+                    ReadBeginScope(tokenProcessor, currentPath, ref alreadyIncluded);
             }
         }
 
-        private void ReadAray(Tokenizer tokenizer, string currentPath)
+        /// <summary>
+        /// The read array.
+        /// </summary>
+        private void ReadArray(TokenProcessor tokenProcessor, string currentPath)
         {
             var array = new List<object>();
             TokenType token;
             string value;
 
-            while (tokenizer.ReadNext(out token, out value,
+            var requestedTokens =
                 new[]
-                    {
-                        TokenType.StringValue,
-                        TokenType.NumericValue,
-                        TokenType.DeciamlValue,
-                        TokenType.DoubleValue,
-                        TokenType.BooleanValue,
-                        TokenType.Substitution,
-                        TokenType.SafeSubstitution,
-                        TokenType.ArraySeparator,
-                        TokenType.EndArray
-                    },
+                {
+                    TokenType.StringValue, TokenType.NumericValue, TokenType.DeciamlValue,
+                    TokenType.DoubleValue, TokenType.BooleanValue, TokenType.Substitution,
+                    TokenType.SafeSubstitution, TokenType.ArraySeparator, TokenType.EndArray
+                };
+
+            while (tokenProcessor.ReadNext(
+                out token,
+                out value,
+                requestedTokens,
                 new[] { TokenType.Comment, TokenType.Space }))
             {
-                tokenizer.Consume();
+                tokenProcessor.Consume();
 
                 if (token == TokenType.EndArray)
                     break;
@@ -235,32 +322,38 @@ namespace OGS.HOCON
             RiseCreateOrUpdateValue(currentPath, array);
         }
 
-        private void ReadBeginScope(Tokenizer tokenizer, string currentPath, ref string alreadyIncluded)
+        /// <summary>
+        /// The read begin scope.
+        /// </summary>
+        private void ReadBeginScope(TokenProcessor tokenProcessor, string currentPath, ref string alreadyIncluded)
         {
             while (true)
             {
                 TokenType token;
                 string value;
               
-                if (tokenizer.ReadNext(out token, out value,
-                                       new[] { TokenType.Key },
-                                       new[] { TokenType.Comment, TokenType.Space }))
+                if (tokenProcessor.ReadNext(
+                    out token,
+                    out value,
+                    new[] { TokenType.Key },
+                    new[] { TokenType.Comment, TokenType.Space }))
                 {
-                    ReadKey(tokenizer, currentPath, ref alreadyIncluded);
+                    ReadKey(tokenProcessor, currentPath, ref alreadyIncluded);
                 }
-                else
-                    if (tokenizer.ReadNext(out token, out value,
-                                           new[] { TokenType.EndScope },
-                                           new[] { TokenType.Comment, TokenType.Space }))
+                else if (tokenProcessor.ReadNext(
+                    out token, out value, new[] { TokenType.EndScope }, new[] { TokenType.Comment, TokenType.Space }))
                     {
-                        tokenizer.Consume();
+                        tokenProcessor.Consume();
                         break;
                     }
                     else
-                        throw new ReaderException("Expected begin end scope '}}' or a property, but: {0}, offset: {1}", token, tokenizer.Offset);
+                        throw new ReaderException("Expected begin end scope '}}' or a property, but: {0}, offset: {1}", token, tokenProcessor.Offset);
             }
         }
 
+        /// <summary>
+        /// The read value.
+        /// </summary>
         private bool ReadValue(TokenType token, string content, out object value)
         {
             value = null;
@@ -275,6 +368,7 @@ namespace OGS.HOCON
 
                         value = data;
                     }
+
                     return true;
 
                 case TokenType.SafeSubstitution:
@@ -284,6 +378,7 @@ namespace OGS.HOCON
 
                         value = data;
                     }
+
                     return true;
 
                 case TokenType.NumericValue:
@@ -291,24 +386,20 @@ namespace OGS.HOCON
                     return true;
 
                 case TokenType.DeciamlValue:
-                    value = decimal.Parse(content);
+                    value = decimal.Parse(content, new NumberFormatInfo { CurrencyDecimalSeparator = "." });
                     return true;
 
                 case TokenType.DoubleValue:
-                    value = (decimal)double.Parse(content);
+                    value = (decimal)double.Parse(content, new NumberFormatInfo { CurrencyDecimalSeparator = "." });
                     return true;
 
                 case TokenType.BooleanValue:
-                    value = 
-                        (
-                            content.Equals("on", StringComparison.InvariantCultureIgnoreCase) ||
-                            content.Equals("true", StringComparison.InvariantCultureIgnoreCase) ||
-                            content.Equals("yes", StringComparison.InvariantCultureIgnoreCase) ||
-                            content.Equals("enabled", StringComparison.InvariantCultureIgnoreCase)
-                        );
+                    value = content.Equals("on", StringComparison.InvariantCultureIgnoreCase) ||
+                        content.Equals("true", StringComparison.InvariantCultureIgnoreCase) ||
+                        content.Equals("yes", StringComparison.InvariantCultureIgnoreCase) ||
+                        content.Equals("enabled", StringComparison.InvariantCultureIgnoreCase);
                     return true;
 
-                //case TokenType.StringValue:
                 default:
                     value = content;
                     return true;

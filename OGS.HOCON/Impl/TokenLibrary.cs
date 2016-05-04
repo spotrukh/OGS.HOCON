@@ -1,11 +1,20 @@
-﻿using System.Collections.Generic;
-
-namespace OGS.HOCON.Impl
+﻿namespace OGS.HOCON.Impl
 {
-    internal class TokenLibrary
+    using System.Collections.Generic;
+
+    /// <summary>
+    /// The token library.
+    /// </summary>
+    internal static class TokenLibrary
     {
+        /// <summary>
+        /// The tokens.
+        /// </summary>
         public static readonly IEnumerable<Token> Tokens;
-        
+
+        /// <summary>
+        /// Initializes static members of the <see cref="TokenLibrary"/> class.
+        /// </summary>
         static TokenLibrary()
         {
             Tokens = new List<Token>

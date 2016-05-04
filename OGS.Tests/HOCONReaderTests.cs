@@ -1,62 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using NUnit.Framework;
-using OGS.HOCON;
-
-namespace OGS.Tests
+﻿namespace OGS.Tests
 {
-    public class HOCONReaderTestHelper
-    {
-        private static string TestSourcesResolver(string sourceName)
-        {
-            switch (sourceName.ToLower())
-            {
-                case "example1": return TestSources.Example1;
+    using System.Collections.Generic;
+    using System.IO;
+    using System.Text;
 
-                case "include1": return TestSources.Include1;
-                case "include2": return TestSources.Include2;
+    using NUnit.Framework;
 
-                case "include_cycles_1": return TestSources.IncludeCycles1;
-                case "include_cycles_2": return TestSources.IncludeCycles2;
+    using OGS.HOCON;
 
-                case "substitution": return TestSources.Substitution;
-                case "safe-substitution": return TestSources.SafeSubstitution;
-                    
-                case "data-types": return TestSources.DataTypes;
-
-                case "array-tests": return TestSources.ArrayTests;
-                case "mixed-array-tests": return TestSources.MixedArrayTests;
-
-                case "extends": return TestSources.Extends;
-                case "overrides": return TestSources.Overrides;
-
-                case "negative1": return NegativeScenariosTestSources.Negative1;
-                case "negative2": return NegativeScenariosTestSources.Negative2;
-                case "negative3": return NegativeScenariosTestSources.Negative3;
-                case "negative4": return NegativeScenariosTestSources.Negative4;
-                case "negative5": return NegativeScenariosTestSources.Negative5;
-            }
-
-            throw new Exception(string.Format("Source not found: '{0}'", sourceName));
-        }
-
-        static public DictionaryReader CreateReader()
-        {
-            var reader = new DictionaryReader(TestSourcesResolver);
-            return reader;
-        }
-    }
-
+    /// <summary>
+    /// The HOCON reader tests.
+    /// </summary>
     [TestFixture]
     public class HOCONReaderTests
     {
-        private class Node
-        {
-        }
-
+        /// <summary>
+        /// The read test.
+        /// </summary>
         [Test]
         public void ReadTest()
         {
@@ -77,6 +37,9 @@ namespace OGS.Tests
             Assert.AreEqual(80, testValue);
         }
 
+        /// <summary>
+        /// The read from string test.
+        /// </summary>
         [Test]
         public void ReadFromStringTest()
         {
@@ -97,6 +60,9 @@ namespace OGS.Tests
             Assert.AreEqual(80, testValue);
         }
 
+        /// <summary>
+        /// The read from stream test.
+        /// </summary>
         [Test]
         public void ReadFromStreamTest()
         {
@@ -120,6 +86,9 @@ namespace OGS.Tests
             Assert.AreEqual(80, testValue);
         }
 
+        /// <summary>
+        /// The include test.
+        /// </summary>
         [Test]
         public void IncludeTest()
         {
@@ -144,6 +113,9 @@ namespace OGS.Tests
             Assert.AreEqual(1024, testValue);
         }
 
+        /// <summary>
+        /// The include cycle dependency test.
+        /// </summary>
         [Test, ExpectedException(typeof(ReaderException), ExpectedMessage = "Already included: include_cycles_2")]
         public void IncludeCycleDependencyTest()
         {
@@ -154,6 +126,9 @@ namespace OGS.Tests
             reader.Read("include_cycles_1");
         }
 
+        /// <summary>
+        /// The substitution test.
+        /// </summary>
         [Test]
         public void SubstitutionTest()
         {
@@ -182,6 +157,9 @@ namespace OGS.Tests
             Assert.AreEqual(true, testValue);
         }
 
+        /// <summary>
+        /// The safe substitution test.
+        /// </summary>
         [Test]
         public void SafeSubstitutionTest()
         {
@@ -208,6 +186,9 @@ namespace OGS.Tests
             Assert.AreEqual(true, testValue);
         }
 
+        /// <summary>
+        /// The values test.
+        /// </summary>
         [Test]
         public void ValuesTest()
         {
@@ -284,6 +265,9 @@ namespace OGS.Tests
             Assert.AreEqual(false, testValue);
         }
 
+        /// <summary>
+        /// The arrays test.
+        /// </summary>
         [Test]
         public void ArraysTest()
         {
@@ -349,6 +333,9 @@ namespace OGS.Tests
             Assert.AreEqual(false, array[5]);
         }
 
+        /// <summary>
+        /// The mixed data types array test.
+        /// </summary>
         [Test]
         public void MixedDataTypesArrayTest()
         {
@@ -374,6 +361,9 @@ namespace OGS.Tests
             Assert.AreEqual(true, array[3]);
         }
 
+        /// <summary>
+        /// The extends test.
+        /// </summary>
         [Test]
         public void ExtendsTest()
         {
@@ -408,6 +398,9 @@ namespace OGS.Tests
             Assert.AreEqual(3, testValue);
         }
 
+        /// <summary>
+        /// The overrides test.
+        /// </summary>
         [Test]
         public void OverridesTest()
         {
@@ -428,8 +421,11 @@ namespace OGS.Tests
             Assert.AreEqual(3, testValue);
         }
 
+        /// <summary>
+        /// The negative scenario 1 test.
+        /// </summary>
         [Test, ExpectedException(typeof(ReaderException), ExpectedMessage = "Expected assign or begin scope, but: Unknown, offset: 7")]
-        public void NegativeScenarious1Test()
+        public void NegativeScenario1Test()
         {
             // Prepare
             var reader = HOCONReaderTestHelper.CreateReader();
@@ -438,8 +434,11 @@ namespace OGS.Tests
             reader.Read("negative1");
         }
 
+        /// <summary>
+        /// The negative scenario 2 test.
+        /// </summary>
         [Test, ExpectedException(typeof(ReaderException), ExpectedMessage = "Expected arra/string/numeric/bool/substitution, but: Unknown, offset: 9")]
-        public void NegativeScenarious2Test()
+        public void NegativeScenario2Test()
         {
             // Prepare
             var reader = HOCONReaderTestHelper.CreateReader();
@@ -448,8 +447,11 @@ namespace OGS.Tests
             reader.Read("negative2");
         }
 
+        /// <summary>
+        /// The negative scenario 3 test.
+        /// </summary>
         [Test, ExpectedException(typeof(ReaderException), ExpectedMessage = "Expected begin end scope '}' or a property, but: Unknown, offset: 9")]
-        public void NegativeScenarious3Test()
+        public void NegativeScenario3Test()
         {
             // Prepare
             var reader = HOCONReaderTestHelper.CreateReader();
@@ -458,8 +460,11 @@ namespace OGS.Tests
             reader.Read("negative3");
         }
 
+        /// <summary>
+        /// The negative scenario 4 test.
+        /// </summary>
         [Test, ExpectedException(typeof(ReaderException), ExpectedMessage = "Expected arra/string/numeric/bool/substitution, but: Unknown, offset: 20")]
-        public void NegativeScenarious4Test()
+        public void NegativeScenario4Test()
         {
             // Prepare
             var reader = HOCONReaderTestHelper.CreateReader();
@@ -468,14 +473,24 @@ namespace OGS.Tests
             reader.Read("negative4");
         }
 
+        /// <summary>
+        /// The negative scenario 5 test.
+        /// </summary>
         [Test, ExpectedException(typeof(ReaderException), ExpectedMessage = "Substitution not found: 'missed'")]
-        public void NegativeScenarious5Test()
+        public void NegativeScenario5Test()
         {
             // Prepare
             var reader = HOCONReaderTestHelper.CreateReader();
 
             // Act
             reader.Read("negative5");
+        }
+
+        /// <summary>
+        /// The node.
+        /// </summary>
+        private class Node
+        {
         }
     }
 }

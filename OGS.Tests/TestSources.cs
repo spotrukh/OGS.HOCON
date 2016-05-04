@@ -1,7 +1,13 @@
 ﻿namespace OGS.Tests
 {
+    /// <summary>
+    /// The test sources.
+    /// </summary>
     public static class TestSources
     {
+        /// <summary>
+        /// The example 1.
+        /// </summary>
         public static readonly string Example1 =
             @"
 #comment 1
@@ -11,6 +17,9 @@ client {
     port : 80
 }";
 
+        /// <summary>
+        /// The include 1.
+        /// </summary>
         public static readonly string Include1 =
             @"
 client { 
@@ -20,6 +29,9 @@ client {
 include ""include2""
 ";
 
+        /// <summary>
+        /// The include 2.
+        /// </summary>
         public static readonly string Include2 =
             @"client { 
 # url : ""http://127.0.0.1""
@@ -27,10 +39,19 @@ include ""include2""
     status: on
 }";
 
+        /// <summary>
+        /// The include cycles 1.
+        /// </summary>
         public static readonly string IncludeCycles1 = @"include ""include_cycles_2""";
 
+        /// <summary>
+        /// The include cycles 2.
+        /// </summary>
         public static readonly string IncludeCycles2 = @"include ""include_cycles_2""";
 
+        /// <summary>
+        /// The substitution.
+        /// </summary>
         public static readonly string Substitution =
             @"
 defaultPort : 22
@@ -40,6 +61,10 @@ ssh {
     port : $(defaultPort)
     enabled : true
 }";
+
+        /// <summary>
+        /// The safe substitution.
+        /// </summary>
         public static readonly string SafeSubstitution =
             @"
 defaultPort : 22
@@ -50,6 +75,9 @@ ssh {
     enabled : true
 }";
 
+        /// <summary>
+        /// The data types.
+        /// </summary>
         public static readonly string DataTypes =
             @"
 dataTypes { 
@@ -71,6 +99,9 @@ dataTypes {
     boolean6 : disabled
 }";
 
+        /// <summary>
+        /// The array tests.
+        /// </summary>
         public static readonly string ArrayTests =
             @"
 dataTypes { 
@@ -80,8 +111,14 @@ dataTypes {
     array4 : [true, false, on, off, enabled, disabled]
 }";
 
+        /// <summary>
+        /// The mixed array tests.
+        /// </summary>
         public static readonly string MixedArrayTests = @"dataTypes { array : [1, 2.2, ""s3"", on] }";
 
+        /// <summary>
+        /// The extends.
+        /// </summary>
         public static readonly string Extends =
             @"base { 
     property1 : 1
@@ -94,6 +131,9 @@ child2 : ${base} {
     property2 : 3
 }";
 
+        /// <summary>
+        /// The overrides.
+        /// </summary>
         public static readonly string Overrides =
             @"base { 
     property1 : 1
@@ -104,15 +144,5 @@ base {
     property1 : 2
     property2 : 3
 }";
-
-    }
-
-    public static class NegativeScenariosTestSources
-    {
-        public static readonly string Negative1 = @"client }";
-        public static readonly string Negative2 = @"client : {";
-        public static readonly string Negative3 = @"client { :";
-        public static readonly string Negative4 = @"client { property : }";
-        public static readonly string Negative5 = @"client = $(missed)";
     }
 }

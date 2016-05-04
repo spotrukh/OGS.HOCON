@@ -1,14 +1,22 @@
-﻿using System.IO;
-using System.Text;
-using System.Collections.Generic;
-using NUnit.Framework;
-using OGS.Config;
-
-namespace OGS.Tests
+﻿namespace OGS.Tests
 {
+    using System.Collections.Generic;
+    using System.IO;
+    using System.Text;
+
+    using NUnit.Framework;
+
+    using OGS.Config;
+
+    /// <summary>
+    /// The configuration tests.
+    /// </summary>
     [TestFixture]
     public class ConfigurationTests
     {
+        /// <summary>
+        /// The config source.
+        /// </summary>
         private const string ConfigSource =
 @"
 ssh_client {
@@ -30,6 +38,9 @@ sources {
     o_array : [1, 3.14, hello]
 }";
 
+        /// <summary>
+        /// The read test.
+        /// </summary>
         [Test]
         public void ReadTest()
         {
@@ -43,6 +54,9 @@ sources {
             Assert.IsTrue(config.HasValue("ssh_client.status"));
         }
 
+        /// <summary>
+        /// The read from string test.
+        /// </summary>
         [Test]
         public void ReadFromStringTest()
         {
@@ -56,6 +70,9 @@ sources {
             Assert.IsTrue(config.HasValue("ssh_client.status"));
         }
 
+        /// <summary>
+        /// The read from stream test.
+        /// </summary>
         [Test]
         public void ReadFromStreamTest()
         {
@@ -72,6 +89,9 @@ sources {
             Assert.IsTrue(config.HasValue("ssh_client.status"));
         }
 
+        /// <summary>
+        /// The get string value test.
+        /// </summary>
         [Test]
         public void GetStringValueTest()
         {
@@ -82,6 +102,9 @@ sources {
             Assert.AreEqual("http://localhost", config.GetString("ssh_client.connection.url", "http://localhost"));
         }
 
+        /// <summary>
+        /// The get int value test.
+        /// </summary>
         [Test]
         public void GetIntValueTest()
         {
@@ -92,6 +115,9 @@ sources {
             Assert.AreEqual(8080, config.GetInt("web_client.port", 8080));
         }
 
+        /// <summary>
+        /// The get decimal value test.
+        /// </summary>
         [Test]
         public void GetDecimalValueTest()
         {
@@ -102,6 +128,9 @@ sources {
             Assert.AreEqual(2.718m, config.GetDecimal("math.e", 2.718m));
         }
 
+        /// <summary>
+        /// The get bool value test.
+        /// </summary>
         [Test]
         public void GetBoolValueTest()
         {
@@ -112,6 +141,9 @@ sources {
             Assert.AreEqual(true, config.GetBool("ssh_client.logging", true));
         }
 
+        /// <summary>
+        /// The get object value test.
+        /// </summary>
         [Test]
         public void GetObjectValueTest()
         {
@@ -126,6 +158,9 @@ sources {
             Assert.AreEqual(null, value);
         }
 
+        /// <summary>
+        /// The get string list value test.
+        /// </summary>
         [Test]
         public void GetStringListValueTest()
         {
@@ -137,11 +172,14 @@ sources {
             Assert.AreEqual("first", value[0]);
             Assert.AreEqual("second", value[1]);
 
-            value = config.GetStringList("sources.s_array_dummy", new List<string>{"s1"});
+            value = config.GetStringList("sources.s_array_dummy", new List<string> { "s1" });
             Assert.AreEqual(1, value.Count);
             Assert.AreEqual("s1", value[0]);
         }
 
+        /// <summary>
+        /// The get int list value test.
+        /// </summary>
         [Test]
         public void GetIntListValueTest()
         {
@@ -158,6 +196,9 @@ sources {
             Assert.AreEqual(333, value[0]);
         }
 
+        /// <summary>
+        /// The get decimal list value test.
+        /// </summary>
         [Test]
         public void GetDecimalListValueTest()
         {
@@ -174,6 +215,9 @@ sources {
             Assert.AreEqual(333.222m, value[0]);
         }
 
+        /// <summary>
+        /// The get bool list value test.
+        /// </summary>
         [Test]
         public void GetBoolListValueTest()
         {
@@ -192,6 +236,9 @@ sources {
             Assert.AreEqual(false, value[2]);
         }
 
+        /// <summary>
+        /// The get object list value test.
+        /// </summary>
         [Test]
         public void GetObjectListValueTest()
         {
@@ -211,7 +258,10 @@ sources {
             Assert.AreEqual(1, value[2]);
         }
 
-        [Test, ExpectedException( typeof(ConfigurationException), 
+        /// <summary>
+        /// The negative case 1 test.
+        /// </summary>
+        [Test, ExpectedException(typeof(ConfigurationException), 
             ExpectedMessage = "Invalid type, expected 'System.String', but: 'System.Collections.Generic.List`1[System.Object]'")]
         public void NegativeCase1Test()
         {
@@ -221,6 +271,9 @@ sources {
             config.GetString("sources.o_array");
         }
 
+        /// <summary>
+        /// The negative case 2 test.
+        /// </summary>
         [Test, ExpectedException(typeof(ConfigurationException),
             ExpectedMessage = "Invalid type, expected 'System.Collections.Generic.List`1[System.String]', but: 'System.String'")]
         public void NegativeCase2Test()
@@ -231,6 +284,9 @@ sources {
             config.GetStringList("ssh_client.connection.host");
         }
 
+        /// <summary>
+        /// The negative case 3 test.
+        /// </summary>
         [Test, ExpectedException(typeof(ConfigurationException),
             ExpectedMessage = "Invalid type, expected 'System.Collections.Generic.List`1[System.Object]', but: 'System.String'")]
         public void NegativeCase3Test()
