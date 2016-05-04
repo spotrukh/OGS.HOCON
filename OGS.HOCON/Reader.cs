@@ -243,6 +243,7 @@
                     tokenProcessor.Consume();
 
                     // Read extends
+                    object simpleValue;
                     if (token == TokenType.Substitution && RiseGetNodeOrValue(value) is TNode)
                     {
                         foreach (var item in RiseGetNodesOrValues(value))
@@ -271,15 +272,12 @@
                         }
                     }
                     else if (token == TokenType.BeginArray)
-                        this.ReadArray(tokenProcessor, currentPath);
+                        ReadArray(tokenProcessor, currentPath);
+                    else if (ReadValue(token, value, out simpleValue))
+                        RiseCreateOrUpdateValue(currentPath, simpleValue);
                     else
-                    {
-                        object simpleValue;
-                        if (ReadValue(token, value, out simpleValue))
-                            RiseCreateOrUpdateValue(currentPath, simpleValue);
-                        else
-                            RiseRemoveNode(currentPath);
-                    }
+                        RiseRemoveNode(currentPath);
+
                 }
                 else if (token == TokenType.BeginScope)
                     ReadBeginScope(tokenProcessor, currentPath, ref alreadyIncluded);

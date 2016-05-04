@@ -32,13 +32,11 @@
         {
             var builder = new StringBuilder();
 
-            if (string.IsNullOrEmpty(headline) == false)
+            headline = headline ?? string.Empty;
+            foreach (var line in headline.Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries))
             {
-                foreach (var line in headline.Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries))
-                {
-                    builder.Append("# ");
-                    builder.AppendLine(line);
-                }
+                builder.Append("# ");
+                builder.AppendLine(line);
             }
 
             var blocks = new Stack<string>();
@@ -82,31 +80,31 @@
                         builder.AppendFormat("{0} {{", entry.Key);
                         builder.AppendLine();
                     }
+
+                    continue;
                 }
-                else
+
+                if (blocks.Count == 0 || entry.Key.StartsWith(blocks.Peek() + ".") == false)
                 {
-                    if (blocks.Count == 0 || entry.Key.StartsWith(blocks.Peek() + ".") == false)
+                    while (blocks.Count > 0)
                     {
-                        while (blocks.Count > 0)
-                        {
-                            blocks.Pop();
-                            builder.Append(new string('\t', blocks.Count));
-                            builder.AppendLine("}");
-                        }
-
-                        builder.AppendLine();
+                        blocks.Pop();
+                        builder.Append(new string('\t', blocks.Count));
+                        builder.AppendLine("}");
                     }
-
-                    builder.Append(new string('\t', blocks.Count));
-
-                    builder.AppendFormat(
-                        "{0} : ",
-                        blocks.Count > 0 ? entry.Key.Replace(blocks.Peek() + ".", string.Empty) : entry.Key);
-
-                    WriteValue(builder, entry.Value);
 
                     builder.AppendLine();
                 }
+
+                builder.Append(new string('\t', blocks.Count));
+
+                builder.AppendFormat(
+                    "{0} : ",
+                    blocks.Count > 0 ? entry.Key.Replace(blocks.Peek() + ".", string.Empty) : entry.Key);
+
+                WriteValue(builder, entry.Value);
+
+                builder.AppendLine();
             }
 
             while (blocks.Count > 0)
